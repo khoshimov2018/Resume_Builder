@@ -30,7 +30,17 @@ A local-first, privacy-focused resume improvement tool built with Next.js (App R
    pnpm install
    ```
 
-2. **Run the development server:**
+2. **Set up environment variables:**
+
+   Create a `.env.local` file in the root directory and add your Google AI API key:
+
+   ```bash
+   GOOGLE_GENERATIVE_AI_API_KEY=your_api_key_here
+   ```
+
+   Get your API key from [Google AI Studio](https://aistudio.google.com/app/apikey).
+
+3. **Run the development server:**
 
    ```bash
    pnpm dev

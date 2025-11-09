@@ -45,11 +45,11 @@ export default function Home() {
         }),
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to revamp resume');
-      }
-
       const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to revamp resume');
+      }
 
       // Update the resume with the revamped version
       setExtractedContent(data.result);
@@ -64,14 +64,14 @@ export default function Home() {
       ]);
     } catch (error) {
       console.error('Error revamping resume:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
 
       // Add error message
       setMessages((prev) => [
         ...prev,
         {
           role: 'assistant',
-          content:
-            'Sorry, I encountered an error while trying to update your resume. Please try again.',
+          content: `Sorry, I encountered an error: ${errorMessage}. Please try again.`,
         },
       ]);
     } finally {

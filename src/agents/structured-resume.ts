@@ -28,32 +28,44 @@ export async function revampResume(
   message: string,
   jobUrl: string
 ) {
-  const { data: jobPortalContent, error: jobPortalError } = await tryCatch(
-    getJobDescription(jobUrl)
-  );
-  if (jobPortalError) {
-    console.error(jobPortalError);
+  let jobDescription = '';
+
+  // Only fetch and parse job description if a URL is provided
+  if (jobUrl && jobUrl.trim().length > 0) {
+    try {
+      const { data: jobPortalContent, error: jobPortalError } = await tryCatch(
+        getJobDescription(jobUrl)
+      );
+      if (jobPortalError) {
+        console.error('Error fetching job description:', jobPortalError);
+      }
+
+      if (jobPortalContent && jobPortalContent.trim().length > 0) {
+        const jobDescriptionResult = await generateText({
+          model: google('gemini-2.0-flash'),
+          system: `
+          You are a job description parser.
+          You will be given a job portal content and you will need to extract the job description from it and requirements from it that are relevant to the resume.
+          `,
+          messages: [
+            {
+              role: 'user',
+              content: jobPortalContent,
+            },
+          ],
+        });
+
+        jobDescription = jobDescriptionResult.text;
+        console.log('Job description:', jobDescription);
+      }
+    } catch (error) {
+      console.error('Error processing job description:', error);
+      // Continue without job description if there's an error
+    }
   }
 
-  const jobDescriptionResult = await generateText({
-    model: google('gemini-1.5-flash-latest'),
-    system: `
-    You are a job description parser.
-    You will be given a job portal content and you will need to extract the job description from it and requirements from it that are relevant to the resume.
-    `,
-    messages: [
-      {
-        role: 'user',
-        content: jobPortalContent || '',
-      },
-    ],
-  });
-
-  const jobDescription = jobDescriptionResult.text;
-  console.log(jobDescription);
-
   const result = await generateObject({
-    model: google('gemini-1.5-flash-latest'),
+    model: google('gemini-2.0-flash'),
     system: `
     You are a resume revamp agent.
     You will be given a resume and a message from the user requesting changes.

@@ -158,3 +158,12 @@
     @apply bg-background text-foreground;
   }
 }
+
+@keyframes pulse-slow {
+  0%, 100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}

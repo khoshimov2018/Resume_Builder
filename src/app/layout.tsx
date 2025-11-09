@@ -1,11 +1,16 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { GeistSans } from 'geist/font/sans';
-import { SidebarProvider } from '@/components/ui/sidebar';
-import AppSidebar from '@/components/app-sidebar';
+import { ConditionalLayout } from '@/components/conditional-layout';
+import { ThemeProvider } from '@/components/theme-provider';
+
 export const metadata: Metadata = {
-  title: 'Resume Revamp',
-  description: 'Get your Updated Resume in seconds',
+  title: 'ResumeCraft - AI-Powered Resume Builder',
+  description: 'Craft your perfect resume with AI in seconds',
+  icons: {
+    icon: '/icon.svg',
+    apple: '/icon.svg',
+  },
 };
 
 export default function RootLayout({
@@ -14,12 +19,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={GeistSans.className}>
-        <SidebarProvider defaultOpen={false}>
-          <AppSidebar />
-          {children}
-        </SidebarProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem={false}
+          disableTransitionOnChange={false}
+        >
+          <ConditionalLayout>{children}</ConditionalLayout>
+        </ThemeProvider>
       </body>
     </html>
   );
